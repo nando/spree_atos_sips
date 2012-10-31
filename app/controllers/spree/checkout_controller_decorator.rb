@@ -2,16 +2,15 @@
 module Spree
   CheckoutController.class_eval do
     attr_accessor :root_path, :request_path, :response_path, :pathfile_path
-    before_filter :load_order
-    before_filter :associate_user
 
 
     private
 
       def atos_request
+        config = BillingIntegration::Atos::Sips.new
         gateway_id = PaymentMethod.where(:type => "Spree::BillingIntegration::Atos::Sips", :active => 1).first.id
-        merchant_id = Preference.where(:key => "spree/billing_integration/atos/sips/merchant_id/#{gateway_id}").first.value
-        banque = Preference.where(:key => "spree/billing_integration/atos/sips/banque/#{gateway_id}").first.value
+        merchant_id = config.preferred_merchant_id
+        banque = config.preferred_banque
         # facebook_app_url = Preference.where(:key => "spree/billing_integration/atos/sips/facebook_application_url/#{gateway_id}").first.value
         base_url = "http://#{Config.site_url}"
         @atos_request = AtosPayment.new(

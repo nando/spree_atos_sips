@@ -1,13 +1,14 @@
 #encoding:utf-8
 class AtosController < ApplicationController
   before_filter :restore_session, :only => [:atos_confirm, :atos_cancel]
+  before_filter :load_banque
 
   respond_to :html
 
   def atos_confirm
-    banque = Spree::Preference.where(:key => "spree/billing_integration/atos/sips/banque/#{Spree::PaymentMethod.where(:type => "Spree::BillingIntegration::Atos::Sips", :active => 1).first.id}").first.value
+    @banque = Spree::Preference.where(:key => "spree/billing_integration/atos/sips/banque/#{Spree::PaymentMethod.where(:type => "Spree::BillingIntegration::Atos::Sips", :active => 1).first.id}").first.value
     @response_array = AtosPayment.new(
-      :banque => banque
+      :banque => @banque
     )
     .response(params[:DATA])
 
@@ -45,9 +46,9 @@ class AtosController < ApplicationController
 
 
   def atos_auto_response
-    banque = Spree::Preference.where(:key => "spree/billing_integration/atos/sips/banque/#{Spree::PaymentMethod.where(:type => "Spree::BillingIntegration::Atos::Sips", :active => 1).first.id}").first.value
+    @banque = Spree::Preference.where(:key => "spree/billing_integration/atos/sips/banque/#{Spree::PaymentMethod.where(:type => "Spree::BillingIntegration::Atos::Sips", :active => 1).first.id}").first.value
     @response_array = AtosPayment.new(
-      :banque => banque
+      :banque => @banque
     )
     .response(params[:DATA])
 
@@ -68,9 +69,9 @@ class AtosController < ApplicationController
 
   private
     def restore_session
-      banque = Spree::Preference.where(:key => "spree/billing_integration/atos/sips/banque/#{Spree::PaymentMethod.where(:type => "Spree::BillingIntegration::Atos::Sips", :active => 1).first.id}").first.value
+      @banque = Spree::Preference.where(:key => "spree/billing_integration/atos/sips/banque/#{Spree::PaymentMethod.where(:type => "Spree::BillingIntegration::Atos::Sips", :active => 1).first.id}").first.value
       @response_array = AtosPayment.new(
-        :banque => banque
+        :banque => @banque
       )
       .response(params[:DATA])
       @user = Spree::User.find(@response_array[:customer_id])
@@ -78,12 +79,17 @@ class AtosController < ApplicationController
     end
 
     def restore_session_on_facebook
-      banque = Spree::Preference.where(:key => "spree/billing_integration/atos/sips/banque/#{Spree::PaymentMethod.where(:type => "Spree::BillingIntegration::Atos::Sips", :active => 1).first.id}").first.value
+      @banque = Spree::Preference.where(:key => "spree/billing_integration/atos/sips/banque/#{Spree::PaymentMethod.where(:type => "Spree::BillingIntegration::Atos::Sips", :active => 1).first.id}").first.value
       @response_array = AtosPayment.new(
-        :banque => banque
+        :banque => @banque
       )
       .response(params[:signed_request])
       @user = Spree::User.find(@response_array[:customer_id])
       sign_in(@user)
+    end
+
+    def load_banque
+      config = Spree::BillingIntegration::Atos::Sips.new
+      @banque = config.preferred_banque
     end
 end

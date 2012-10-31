@@ -1,6 +1,6 @@
 module Spree
   class BillingIntegration::Atos::Sips < BillingIntegration
-    preference :merchant_id, :string
+    preference :merchant_id, :string, :default => '014213245611111'
     preference :banque, :string, :default => 'sogenactif'
     # preference :facebook_application_url, :string
 
