@@ -29,7 +29,7 @@ class AtosController < ApplicationController
 
   def atos_cancel
     session[:order_id] = @order.id
-    flash[:error] = I18n.t(:payment_has_been_cancelled).html_save
+    flash[:error] = I18n.t(:payment_has_been_cancelled).html_safe
     redirect_to "/checkout/payment"
   end
 
