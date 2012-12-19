@@ -23,7 +23,8 @@ module Spree
           :order_id               => @order.id,
           :automatic_response_url => "#{base_url}/atos/atos_auto_response",
           :normal_return_url      => "#{base_url}/atos/atos_confirm",
-          :cancel_return_url      => "#{base_url}/atos/atos_cancel"
+          :cancel_return_url      => "#{base_url}/atos/atos_cancel",
+          :language               => I18n.locale.to_s[0..1]
           # on facebook
           # :automatic_response_url => "{facebook_app_url}/atos/atos_auto_response",
           # :normal_return_url      => "{facebook_app_url}/atos/atos_confirm",
