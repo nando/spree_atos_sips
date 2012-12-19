@@ -12,10 +12,12 @@ class AtosController < ApplicationController
       if amounts_match?
         order_completed!
         session[:order_id] = nil
-        flash[:notice] = "Le paiement a été effectué avec succès"
+        flash[:notice] = I18n.t(:order_processed_successfully).html_safe
         redirect_to spree.order_path(@order)
       else
-        flash[:error] = "Le prix de vos achats (#{(@order.total.to_f*100).to_i}) et le montant que vous avez payé (#{@response_array[:amount]}) diffèrent"
+        flash[:error] = I18n.t(:amounts_do_not_match,
+                          :total_order => @order.total,
+                          :total_paid => @response_array[:amount].to_f/100).html_safe
         redirect_to "/"
       end
     else
@@ -27,7 +29,7 @@ class AtosController < ApplicationController
 
   def atos_cancel
     session[:order_id] = @order.id
-    flash[:error] = "Paiement annule. Choisissez une autre méthode de paiement ou <a href='/'>continuez vos achats</a>".html_safe
+    flash[:error] = I18n.t(:payment_has_been_cancelled).html_save
     redirect_to "/checkout/payment"
   end
 
