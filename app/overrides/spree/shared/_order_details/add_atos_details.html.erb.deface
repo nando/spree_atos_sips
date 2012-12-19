@@ -1,0 +1,9 @@
+<!--
+  insert_bottom '.payment-info'
+-->
+<% if order.payment && order.payment.source.class.to_s == 'Spree::AtosSipsAccount' %>
+<span class="cc-type">
+  <%= image_tag "../sogenactif/payment/logo/#{order.payment.source.payment_means}.gif" %>
+  <%= order.payment.source.card_number.gsub('.', ' XXXX XXXX XX') %>
+</span>
+<% end %>

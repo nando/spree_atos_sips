@@ -1,4 +1,4 @@
-module SpreeAtos
+module SpreeAtosSips
   class Engine < Rails::Engine
     engine_name 'atos_sips'
 

@@ -1,4 +1,4 @@
-module SpreeAtos
+module SpreeAtosSips
   module Generators
     class InstallGenerator < Rails::Generators::Base
       def add_migrations
