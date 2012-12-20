@@ -7,17 +7,14 @@ module Spree
     private
 
       def atos_request
-        config = BillingIntegration::Atos::Sips.new
-        gateway_id = PaymentMethod.where(:type => "Spree::BillingIntegration::Atos::Sips", :active => 1).first.id
-        merchant_id = config.preferred_merchant_id
-        banque = config.preferred_banque
-        # facebook_app_url = Preference.where(:key => "spree/billing_integration/atos/sips/facebook_application_url/#{gateway_id}").first.value
+        gateway = PaymentMethod.where(:type => "Spree::BillingIntegration::Atos::Sips", :active => 1).first
+        # facebook_app_url = Preference.where(:key => "spree/billing_integration/atos/sips/facebook_application_url/#{gateway.id}").first.value
         base_url = "http://#{Config.site_url}"
         @atos_request = AtosPayment.new(
-          :banque => banque.to_s
+          :banque => gateway.preferred_banque.to_s
         )
         .request(
-          :merchant_id            => merchant_id,
+          :merchant_id            => gateway.preferred_merchant_id,
           :amount                 => (@order.total.to_f*100).to_i,
           :customer_id            => current_user.id,
           :order_id               => @order.id,
