@@ -4,7 +4,7 @@ module Spree
   class AtosController < ApplicationController
     before_filter :load_response_data
     before_filter :restore_session, :only => [:atos_confirm, :atos_cancel]
-    before_filter :create_payment, :only => [:atos_confirm, :atos_auto_response]
+    before_filter :create_payment
     respond_to :html
   
     def atos_confirm
@@ -30,6 +30,7 @@ module Spree
   
   
     def atos_cancel
+      @payment.failure!
       session[:order_id] = @order.id
       flash[:error] = I18n.t(:payment_has_been_cancelled).html_safe
       redirect_to "/checkout/payment"
@@ -69,6 +70,7 @@ module Spree
           :payment_method_id => @payment_method.id,
           :response_code => @response_array[:response_code],
           :avs_response => @response_array[:error])
+        @payment.started_processing!
       end
   
       def transaction_approved?
@@ -83,7 +85,10 @@ module Spree
         @order.state = "complete"
         @order.payment_state = "paid"
         @order.completed_at = Time.now
+        @order.send(:consume_users_credit) if @order.respond_to?(:consume_users_credit, true)
         @order.save
+        @payment.complete!
+        @order.finalize!
       end
   end
 end
