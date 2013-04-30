@@ -85,10 +85,10 @@ module Spree
         @order.state = "complete"
         @order.payment_state = "paid"
         @order.completed_at = Time.now
-        @order.send(:consume_users_credit) if @order.respond_to?(:consume_users_credit, true)
         @order.save
         @payment.complete!
         @order.finalize!
+        @order.send(:consume_users_credit) if @order.respond_to?(:consume_users_credit, true)
       end
   end
 end
